@@ -148,13 +148,46 @@ def getUserID(email):
     except:
         return None
 
+@app.route('/gdisconnect')
+def gdisconnect():
+    access_token = login_session['access_token']
+    print ('In gdisconnect access token is %s', access_token)
+    print ('User name is: ')
+    print (login_session['username'])
+    if access_token is None:
+        print ('Access Token is None')
+        response = make_response(json.dumps('Current user not connected.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
+    h = httplib2.Http()
+    result = h.request(url, 'GET')[0]
+    print ('result is ')
+    print (result)
+    if result['status'] == '200':
+        del login_session['access_token']
+        del login_session['gplus_id']
+        del login_session['username']
+        del login_session['email']
+        response = make_response(json.dumps('Successfully disconnected.'), 200)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    else:
+
+    	response = make_response(json.dumps('Failed to revoke token for given user.', 400))
+    	response.headers['Content-Type'] = 'application/json'
+    	return response
+
 # Show all catalogs
 @app.route('/')
 @app.route('/catalog/')
 def showCatalog():
     categories = session.query(Category).order_by(asc(Category.name))
     items = session.query(Item).order_by(desc(Item.id))
-    return render_template('main.html', category=categories, item=items)
+    if 'username' not in login_session:
+        return render_template('main.html', category=categories, item=items)
+    else:
+        return render_template('private_main.html', category=categories, item=items)
 
 @app.route('/catalog/<category_name>/items')
 def showItems(category_name):
@@ -167,6 +200,28 @@ def showItems(category_name):
 def showDecription(category_name, item_name):
     item = session.query(Item).join(Category).filter(Category.name==category_name, Item.name==item_name).first()
     return render_template('description.html', item=item)
+
+@app.route('/catalog/add', methods=['GET', 'POST'])
+def addItem():
+    if request.method == 'GET':
+        if 'username' not in login_session:
+            return redirect('/login')
+        category = session.query(Category).order_by(Category.name)
+        return render_template('add_item.html', category=category)
+    if request.method == 'POST':
+        category_name = request.form['category']
+        category = session.query(Category).filter(Category.name==category_name).first()
+        user = session.query(User).filter_by(name='username').first()
+        newItem = Item(name=request.form['title'], description=request.form['description'], category=category, user=user)
+        session.add(newItem)
+        session.commit()
+        flash('New Item (%s) Successfully Created' % (newItem.name))
+        return redirect(url_for('showCatalog'))
+
+@app.route('/catalog/<item_name>/edit', methods=['GET', 'POST'])
+def editItem():
+    if request.method == 'GET':
+    if request.method == 'POST':
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'

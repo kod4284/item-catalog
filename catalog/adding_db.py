@@ -44,4 +44,4 @@ Item4 = Item(user_id=1, name="Basketball uniform", description="This is a Basket
 session.add(Item4)
 session.commit()
 
-print "added categories and items!"
+print ("added categories and items!")
