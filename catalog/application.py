@@ -43,6 +43,10 @@ def showItems(category_name):
     return render_template('items.html', category=categories,
                             category_name=category_name, item=items)
 
+@app.route('/catalog/<category_name>/<item_name>')
+def showDecription(category_name, item_name):
+    item = session.query(Item).join(Category).filter(Category.name==category_name, Item.name==item_name).first()
+    return render_template('description.html', item=item)
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'

@@ -22,8 +22,8 @@
       		<div class="items">
       			<h2 class="cate_name">Latest Items</h2>
               {% for i in item %}
-              <a class="cate_value" href="#">{{i.name}}</a>
-              <a href="#">({{i.category.name}})<br></a>
+              <a class="cate_value" href="{{ url_for('showDecription', category_name=i.category.name, item_name=i.name)}}">{{i.name}}</a>
+              <a>({{i.category.name}})<br></a>
               {% endfor %}
       		</div>
       	</div>

@@ -33,6 +33,18 @@ section {
   background-color: #fff;
   border-right: 1px groove
 }
+.wrapper2 {
+  width:900px;
+  height:550px;
+  padding:0px;
+  background-color: #A4A4A4;;
+}
+.desc{
+  float:left;
+  width:700px;
+  height:230px;
+  background-color: #fff;
+}
 .items{
   float:left;
   width:700px;

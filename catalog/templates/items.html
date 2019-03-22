@@ -22,7 +22,7 @@
       		<div class="items">
       			<h2 class="cate_name">{{category_name}} Items ({{item.count()}} items)</h2>
               {% for i in item %}
-                <a href="#">{{i.name}}<br></a>
+                <a href="{{ url_for('showDecription', category_name=i.category.name, item_name=i.name)}}">{{i.name}}<br></a>
               {% endfor %}
       		</div>
       	</div>
