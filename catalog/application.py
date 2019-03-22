@@ -1,9 +1,9 @@
 from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
 
 
-from sqlalchemy import create_engine, asc
+from sqlalchemy import create_engine, asc, desc
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Catalog, Item, User
+from database_setup import Base, Category, Item, User
 
 from flask import session as login_session
 import random
@@ -32,8 +32,17 @@ session = DBSession()
 @app.route('/')
 @app.route('/catalog/')
 def showCatalog():
-    catalog = session.query(Catalog).order_by(asc(Catalog.name))
-    return render_template('catalog.html', catalog=catalog)
+    categories = session.query(Category).order_by(asc(Category.name))
+    items = session.query(Item).order_by(desc(Item.id))
+    return render_template('main.html', category=categories, item=items)
+
+@app.route('/catalog/<category_name>/items')
+def showItems(category_name):
+    categories = session.query(Category).order_by(asc(Category.name))
+    items = session.query(Item).join(Category).filter(Category.name==category_name).order_by(Category.name)
+    return render_template('items.html', category=categories,
+                            category_name=category_name, item=items)
+
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
