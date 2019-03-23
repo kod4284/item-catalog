@@ -199,7 +199,10 @@ def showItems(category_name):
 @app.route('/catalog/<category_name>/<item_name>')
 def showDecription(category_name, item_name):
     item = session.query(Item).join(Category).filter(Category.name==category_name, Item.name==item_name).first()
-    return render_template('description.html', item=item)
+    if 'username' not in login_session:
+        return render_template('description.html', item=item)
+    else:
+        return render_template('private_description.html', item=item)
 
 @app.route('/catalog/add', methods=['GET', 'POST'])
 def addItem():
@@ -211,18 +214,46 @@ def addItem():
     if request.method == 'POST':
         category_name = request.form['category']
         category = session.query(Category).filter(Category.name==category_name).first()
-        user = session.query(User).filter_by(name='username').first()
-        newItem = Item(name=request.form['title'], description=request.form['description'], category=category, user=user)
+        #user = session.query(User).filter_by(name='username').first()
+        newItem = Item(name=request.form['title'], description=request.form['description'], category=category, user_id = login_session['user_id'])
         session.add(newItem)
         session.commit()
         flash('New Item (%s) Successfully Created' % (newItem.name))
         return redirect(url_for('showCatalog'))
 
 @app.route('/catalog/<item_name>/edit', methods=['GET', 'POST'])
-def editItem():
+def editItem(item_name):
     if request.method == 'GET':
+        editeditem = session.query(Item).filter_by(name=item_name).one()
+        category = session.query(Category)
+        if 'username' not in login_session:
+            return redirect('/login')
+        if editeditem.user_id != login_session['user_id']:
+            return "<script>function myAlert() {alert('You are not authorized to edit this item. You can only edit the items you created');}</script><body onload='myAlert()''>"
+        return render_template('edit_item.html', edit_item=editeditem, category=category)
+    if request.method == 'POST':
+        editeditem = session.query(Item).filter_by(name=item_name).one()
+
+        category_name = request.form['category']
+        category = session.query(Category).filter(Category.name==category_name).first()
+
+        editeditem.name = request.form['title']
+        editeditem.description = request.form['description']
+        editeditem.category = category
+        return redirect(url_for('showCatalog'))
+
+@app.route('/catalog/<item_name>/delete', methods=['GET', 'POST'])
+def deleteItem(item_name):
+    if request.method == 'GET':
+        deleteditem = session.query(Item).filter_by(name=item_name).one()
+        if 'username' not in login_session:
+            return redirect('/login')
+        if deleteditem.user_id != login_session['user_id']:
+            return "<script>function myAlert() {alert('You are not authorized to delete this item. You can only delete the items you created');}</script><body onload='myAlert()''>"
+        return render_template('edit_item.html', edit_item=editeditem, category=category)
     if request.method == 'POST':
 
+        category = session.query(Category)
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
     app.debug = True
