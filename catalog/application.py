@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from flask import Flask, render_template, request, redirect, jsonify, url_for
 from flask import make_response, flash
 from sqlalchemy import create_engine, asc, desc
