@@ -28,20 +28,24 @@ session.add(Category2)
 session.commit()
 
 # Create items
-Item1 = Item(user_id=1, name="Soccer ball", description="This is a Soccer ball", category=Category1)
+Item1 = Item(user_id=1, name="Soccer ball",
+             description="This is a Soccer ball", category=Category1)
 session.add(Item1)
 session.commit()
 
-Item2 = Item(user_id=2, name="Soccer uniform", description="This is a Soccer uniform", category=Category1)
+Item2 = Item(user_id=2, name="Soccer uniform",
+             description="This is a Soccer uniform", category=Category1)
 session.add(Item2)
 session.commit()
 
-Item3 = Item(user_id=1, name="Basketball ball", description="This is a Basketball ball", category=Category2)
+Item3 = Item(user_id=1, name="Basketball ball",
+             description="This is a Basketball ball", category=Category2)
 session.add(Item3)
 session.commit()
 
-Item4 = Item(user_id=1, name="Basketball uniform", description="This is a Basketball uniform", category=Category2)
+Item4 = Item(user_id=1, name="Basketball uniform",
+             description="This is a Basketball uniform", category=Category2)
 session.add(Item4)
 session.commit()
 
-print ("added categories and items!")
+print("added categories and items!")
