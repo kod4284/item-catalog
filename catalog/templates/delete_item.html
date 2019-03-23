@@ -14,13 +14,10 @@
       <center>
       <div class="wrapper2">
         <div class="desc">
-          <h2 class="cate_name">{{item.name}}</h2>
-            <p>Description: {{item.description}}</p>
-						<form action="{{url_for('editItem', item_name=item.name)}}">
-							<button type="submit">Edit</button>
-						</form>
-						<form action="{{url_for('deleteItem', item_name=item.name)}}">
-							<button type="submit">Delete</button>
+					<h2 class="cate_name">Delete Item</h2>
+            <form action="{{url_for('deleteItem', item_name=delete_item.name)}}" method="POST">
+							<p>Are you sure you want to delete?</p>
+							<button type="submit">delete</button>
 						</form>
         </div>
       </div>

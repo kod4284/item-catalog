@@ -250,10 +250,14 @@ def deleteItem(item_name):
             return redirect('/login')
         if deleteditem.user_id != login_session['user_id']:
             return "<script>function myAlert() {alert('You are not authorized to delete this item. You can only delete the items you created');}</script><body onload='myAlert()''>"
-        return render_template('edit_item.html', edit_item=editeditem, category=category)
+        return render_template('delete_item.html', delete_item=deleteditem)
     if request.method == 'POST':
+        deleteditem = session.query(Item).filter_by(name=item_name).one()
+        session.delete(deleteditem)
+        session.commit()
+        return redirect(url_for('showCatalog'))
 
-        category = session.query(Category)
+
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
     app.debug = True
