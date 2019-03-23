@@ -166,8 +166,12 @@ def gdisconnect():
         del login_session['gplus_id']
         del login_session['username']
         del login_session['email']
-        response = make_response(json.dumps('Successfully disconnected.'), 200)
-        response.headers['Content-Type'] = 'application/json'
+        script = '''<script type='text/javascript'>
+               document.write('Successfully disconnected.</br>Redirecting...')
+               setTimeout("location.href='/'",2000);
+               </script>'''
+        response = make_response(script, 200)
+        response.headers['Content-Type'] = 'text/html'
         return response
     else:
         response = make_response(
@@ -222,7 +226,7 @@ def itemJSON(item_name):
 @app.route('/catalog/<category_name>/<item_name>')
 def showDecription(category_name, item_name):
     item = session.query(Item).join(Category).filter(
-        Category.name == category_name, Item.name == item_name).first()
+        Category.name == category_name, Item.name == item_name).one()
     if 'username' not in login_session:
         return render_template('description.html', item=item)
     else:
@@ -259,7 +263,8 @@ def editItem(item_name):
         if editeditem.user_id != login_session['user_id']:
             result = "<script>function myAlert(){alert('You are not authorized"
             result += " to edit this item. You can only edit the items you"
-            result += " created');}</script><body onload='myAlert()''>"
+            result += " created'); document.location.href='/'}"
+            result += "</script><body onload='myAlert()''>"
             return result
         return render_template('edit_item.html',
                                edit_item=editeditem, category=category)
@@ -285,7 +290,8 @@ def deleteItem(item_name):
         if deleteditem.user_id != login_session['user_id']:
             result = "<script>function myAlert(){alert('You are not authorized"
             result += " to delete this item. You can only delete the items you"
-            result += " created');}</script><body onload='myAlert()''>"
+            result += " created');document.location.href='/'}"
+            result += "</script><body onload='myAlert()''>"
             return result
         return render_template('delete_item.html', delete_item=deleteditem)
     if request.method == 'POST':

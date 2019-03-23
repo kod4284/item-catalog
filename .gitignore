@@ -2,3 +2,4 @@
 /.vagrant
 /catalog/__pycache__/.
 /catalog/venv
+*.db
